@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const menuController_1 = require("../controllers/menuController");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const router = (0, express_1.Router)();
+router.get("/current", menuController_1.getCurrentWeekMenu);
+router.get("/next-week", menuController_1.getNextWeekMenu);
+router.post("/save", authMiddleware_1.authMiddleware, menuController_1.saveWeeklyMenu);
+router.put("/:menuItemId/portion", authMiddleware_1.authMiddleware, menuController_1.updatePortionCount);
+exports.default = router;

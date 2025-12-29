@@ -1,0 +1,13 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const app_1 = __importDefault(require("./app"));
+const cronScheduler_1 = require("./utils/cronScheduler");
+const PORT = process.env.PORT || 5000;
+// Start CRON scheduler
+(0, cronScheduler_1.setupMenuAutoAssignment)();
+app_1.default.listen(PORT, () => {
+    console.log(`Nutriplan API running on port ${PORT}`);
+});

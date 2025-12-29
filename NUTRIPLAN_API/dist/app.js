@@ -1,0 +1,30 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+app.get("/", (req, res) => {
+    res.json({ message: "Nutriplan API running" });
+});
+exports.default = app;
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
+app.use("/api/auth", authRoutes_1.default);
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+app.use("/api/users", userRoutes_1.default);
+const menuRoutes_1 = __importDefault(require("./routes/menuRoutes"));
+app.use("/api/menus", menuRoutes_1.default);
+const studentChoiceRoutes_1 = __importDefault(require("./routes/studentChoiceRoutes"));
+app.use("/api/student-choices", studentChoiceRoutes_1.default);
+const kitchenRoutes_1 = __importDefault(require("./routes/kitchenRoutes"));
+app.use("/api/kitchen", kitchenRoutes_1.default);
+const allergenRoutes_1 = __importDefault(require("./routes/allergenRoutes"));
+app.use("/api/allergens", allergenRoutes_1.default);
+const aiRoutes_1 = __importDefault(require("./routes/aiRoutes"));
+app.use("/api/ai", aiRoutes_1.default);
