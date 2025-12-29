@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String              @id @default(uuid())
+  name            String
+  email           String              @unique
+  password        String
+  role            Role
+  class           String?
+  nis             String?             @unique
+  customAllergies String?
+  bio             String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  menuChoices     StudentMenuChoice[]
+  allergens       UserAllergen[]
+  createdMenus    WeeklyMenu[]
+}
+
+model UserAllergen {
+  id       String  @id @default(uuid())
+  userId   String
+  allergen String
+  isCustom Boolean @default(false)
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model StudentMenuChoice {
+  id             String     @id @default(uuid())
+  studentId      String
+  weekStart      DateTime
+  day            DayEnum
+  choice         MenuChoice
+  isAutoAssigned Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  student        User       @relation(fields: [studentId], references: [id])
+}
+
+model WeeklyMenu {
+  id          String     @id @default(uuid())
+  weekStart   DateTime
+  weekEnd     DateTime
+  isActive    Boolean    @default(true)
+  createdById String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       MenuItem[]
+  createdBy   User       @relation(fields: [createdById], references: [id])
+}
+
+model MenuItem {
+  id           String           @id @default(uuid())
+  weekMenuId   String
+  day          DayEnum
+  mainDish     String
+  sideDish     String
+  vegetable    String
+  fruit        String
+  drink        String
+  imageUrl     String?
+  calories     Int?
+  protein      String?
+  carbs        String?
+  fat          String?
+  portionCount Int              @default(150)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  allergens    MenuAllergen[]
+  ingredients  MenuIngredient[]
+  weekMenu     WeeklyMenu       @relation(fields: [weekMenuId], references: [id])
+}
+
+model MenuIngredient {
+  id         String   @id @default(uuid())
+  menuItemId String
+  ingredient String
+  quantity   String?
+  unit       String?
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+model MenuAllergen {
+  id         String   @id @default(uuid())
+  menuItemId String
+  allergen   String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+model GoodMenu {
+  id          String               @id @default(uuid())
+  weekStart   DateTime
+  mainDish    String
+  sideDish    String
+  vegetable   String
+  fruit       String
+  drink       String
+  imageUrl    String?
+  calories    Int?
+  protein     String?
+  carbs       String?
+  fat         String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  allergens   MenuAllergenGood[]
+  ingredients MenuIngredientGood[]
+}
+
+model MenuIngredientGood {
+  id         String   @id @default(uuid())
+  goodMenuId String
+  ingredient String
+  quantity   String?
+  unit       String?
+  goodMenu   GoodMenu @relation(fields: [goodMenuId], references: [id])
+}
+
+model MenuAllergenGood {
+  id         String   @id @default(uuid())
+  goodMenuId String
+  allergen   String
+  goodMenu   GoodMenu @relation(fields: [goodMenuId], references: [id])
+}
+
+enum Role {
+  student
+  admin
+  kitchen_staff
+}
+
+enum DayEnum {
+  Senin
+  Selasa
+  Rabu
+  Kamis
+  Jumat
+}
+
+enum MenuChoice {
+  harian
+  sehat
+}
+
+// ============================================
+// KNOWLEDGE BASE TABLES (for AI reasoning)
+// ============================================
+
+model Ingredient {
+  id        String                @id @default(uuid())
+  name      String                @unique
+  category  IngredientCategory
+  synonyms  String?               // comma-separated synonyms
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  allergens IngredientAllergen[]
+  menuCases MenuCase[]            @relation("BaseIngredient")
+}
+
+model Allergen {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  ingredients IngredientAllergen[]
+}
+
+model IngredientAllergen {
+  id           String     @id @default(uuid())
+  ingredientId String
+  allergenId   String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  allergen     Allergen   @relation(fields: [allergenId], references: [id])
+
+  @@unique([ingredientId, allergenId])
+}
+
+model MenuCase {
+  id                String     @id @default(uuid())
+  baseIngredientId  String
+  menuName          String
+  description       String?
+  composition       String?    // comma-separated list of ingredients
+  imageUrl          String? 
+  calories          Int?
+  protein           String?
+  carbs             String?
+  fat               String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  baseIngredient    Ingredient @relation("BaseIngredient", fields: [baseIngredientId], references: [id])
+}
+
+enum IngredientCategory {
+  protein
+  carb
+  vegetable
+  fruit
+  dairy
+  soy
+  seafood
+  gluten
+  misc
+}
