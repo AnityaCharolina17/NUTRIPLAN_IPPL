@@ -7,11 +7,16 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "seed": "ts-node prisma/seed.ts",
-    "seed:knowledge": "ts-node prisma/seedKnowledge.ts",
-    "verify:kb": "ts-node prisma/verifyKnowledge.ts"
-  },
+  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+
+  "build": "tsc",
+
+  "start": "node dist/server.js",
+
+  "seed": "ts-node prisma/seed.ts",
+  "seed:knowledge": "ts-node prisma/seedKnowledge.ts",
+  "verify:kb": "ts-node prisma/verifyKnowledge.ts"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
