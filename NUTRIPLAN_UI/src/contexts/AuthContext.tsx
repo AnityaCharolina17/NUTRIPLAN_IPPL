@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // If token exists, fetch profile from backend
     const token = localStorage.getItem('nutriplan_token');
     if (token) {
-      api.get('/auth/me')
+      api.get('/api/auth/me')
         .then((res) => {
           if (res.data?.success && res.data?.user) {
             const userFromApi = res.data.user as User;
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     additionalData?: { nis?: string }
   ): Promise<{ success: boolean; message?: string }> => {
     try {
-      const res = await api.post('/auth/register', {
+      const res = await api.post('/api/auth/register', {
         name,
         email,
         password,
@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string, role?: 'student' | 'admin' | 'kitchen_staff'): Promise<boolean> => {
     try {
-      const res = await api.post('/auth/login', { email, password, role });
+      const res = await api.post('/api/auth/login', { email, password, role });
       if (!res.data?.success) return false;
 
       const { token, user: apiUser } = res.data;
