@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+// Routes
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import menuRoutes from "./routes/menuRoutes";
@@ -16,16 +17,27 @@ const app = express();
 
 /**
  * ======================
- * CORS CONFIG (WAJIB)
+ * CORS CONFIG (FINAL)
  * ======================
- * Izinkan frontend Vercel + localhost
+ * - Allow localhost
+ * - Allow ALL Vercel domains (*.vercel.app)
+ * - Prevent random origins
  */
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://nutriplan-ippl-jy1w.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      // allow server-to-server, curl, postman
+      if (!origin) return callback(null, true);
+
+      if (
+        origin.includes("localhost") ||
+        origin.includes("vercel.app")
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -43,7 +55,7 @@ app.get("/", (req, res) => {
 
 /**
  * ======================
- * ROUTES
+ * API ROUTES
  * ======================
  */
 app.use("/api/auth", authRoutes);
@@ -53,6 +65,18 @@ app.use("/api/student-choices", studentChoiceRoutes);
 app.use("/api/kitchen", kitchenRoutes);
 app.use("/api/allergens", allergenRoutes);
 app.use("/api/ai", aiRoutes);
+
+/**
+ * ======================
+ * 404 HANDLER (OPTIONAL BUT GOOD)
+ * ======================
+ */
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API route not found",
+  });
+});
 
 /**
  * ======================
