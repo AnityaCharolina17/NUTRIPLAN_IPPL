@@ -141,6 +141,41 @@ export function KitchenDashboardPage() {
           </Card>
         </div>
 
+        {/* Student Menu Choices Recap Cards */}
+        {weeklyRecap.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Rekapan Pilihan Menu Siswa Minggu Ini</CardTitle>
+              <CardDescription>
+                Total {totalStudents} siswa telah memilih menu
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-5 gap-4">
+                {weeklyRecap.map((recap, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-2">{recap.day}</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Menu Harian:</span>
+                        <span className="font-medium text-green-600">{recap.mainMenuCount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Menu Sehat:</span>
+                        <span className="font-medium text-blue-600">{recap.safeMenuCount}</span>
+                      </div>
+                      <div className="flex justify-between pt-2 border-t">
+                        <span className="text-gray-700 font-medium">Total:</span>
+                        <span className="font-semibold">{recap.total}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Weekly Menu Recap Table */}
         <Card>
           <CardHeader>
