@@ -1,24 +1,55 @@
-import axios from 'axios';
+import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_URL;
+/**
+ * API ROOT
+ * - Production (Vercel): set VITE_API_URL=https://nutriplanippl-production.up.railway.app
+ * - Local dev: optional, bisa kosong (fallback ke proxy / relative)
+ */
+const API_ROOT = import.meta.env.VITE_API_URL;
+
+/**
+ * BASE URL
+ * - Selalu pakai prefix /api (sesuai app.ts backend)
+ * - Fallback ke /api untuk local/proxy
+ */
+const baseURL = API_ROOT ? `${API_ROOT}/api` : "/api";
 
 export const api = axios.create({
   baseURL,
+  withCredentials: true,
 });
 
-// Attach token if present
+/**
+ * Attach JWT token if exists
+ */
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('nutriplan_token');
+  const token = localStorage.getItem("nutriplan_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
+/**
+ * Auto-drop bad tokens to avoid infinite 401 loops
+ */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      localStorage.removeItem("nutriplan_token");
+    }
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Token helper
+ */
 export async function setToken(token?: string) {
   if (token) {
-    localStorage.setItem('nutriplan_token', token);
+    localStorage.setItem("nutriplan_token", token);
   } else {
-    localStorage.removeItem('nutriplan_token');
+    localStorage.removeItem("nutriplan_token");
   }
 }
