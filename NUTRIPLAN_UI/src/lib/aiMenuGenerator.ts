@@ -27,7 +27,7 @@ export const generateMenuSuggestions = async (
 ): Promise<MenuSuggestion[]> => {
   try {
     const response = await api.post("/ai/generate-menu-cbr", {
-      ingredients: [ingredient], // ⬅️ WAJIB array
+      ingredients: ingredient, // ⬅️ WAJIB array
     });
 
     const data = response.data;
