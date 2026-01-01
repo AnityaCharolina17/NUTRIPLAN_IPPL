@@ -35,16 +35,24 @@ export function KitchenDashboardPage() {
     return <Navigate to="/" replace />;
   }
   const weekStartDate = useMemo(() => {
-    const first = weeklySchedule[0]?.date;
-    return first ? new Date(first) : new Date();
-  }, [weeklySchedule]);
+    // Calculate Monday of current week (same logic as MenuContext)
+    const d = new Date();
+    const day = d.getDay(); // 0-6 (0=Sun)
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday of current week
+    d.setDate(diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
   useEffect(() => {
     const fetchRecap = async () => {
       try {
         const iso = weekStartDate.toISOString();
-        const { data } = await api.get(`/kitchen/recap/${iso}`);
-        if (!data?.success) return;
+        const { data } = await api.get(`/api/kitchen/recap`, { validateStatus: () => true });
+        if (!data?.success) {
+          console.warn('Failed to fetch kitchen recap:', data?.message);
+          return;
+        }
 
         // Map dailyRecap to UI structure
         const recapArr: Array<{ day: string; date: string; mainMenu: string; mainMenuCount: number; safeMenu: string; safeMenuCount: number; total: number }> = [];
