@@ -109,7 +109,7 @@ export interface TestResult {
 
 export async function runAllergenTest(testCase: TestCase): Promise<TestResult> {
   try {
-    const { data } = await api.post('/ai/check-allergen', {
+    const { data } = await api.post('/api/ai/check-allergen', {
       ingredients: testCase.ingredients
     });
 

@@ -29,7 +29,7 @@ export function TestingPage() {
       {
         name: 'Valid ingredient (tahu)',
         fn: async () => {
-          const { data } = await api.post('/ai/validate-ingredient', {
+          const { data } = await api.post('/api/ai/validate-ingredient', {
             ingredientName: 'tahu'
           });
           return { pass: data.isValid === true, details: data };
@@ -38,7 +38,7 @@ export function TestingPage() {
       {
         name: 'Invalid ingredient rejection (pizza)',
         fn: async () => {
-          const { data } = await api.post('/ai/validate-ingredient', {
+          const { data } = await api.post('/api/ai/validate-ingredient', {
             ingredientName: 'pizza'
           });
           return { pass: data.isValid === false, details: data };
@@ -47,7 +47,7 @@ export function TestingPage() {
       {
         name: 'Soy allergen detection (tahu)',
         fn: async () => {
-          const { data } = await api.post('/ai/check-allergen', {
+          const { data } = await api.post('/api/ai/check-allergen', {
             ingredients: ['tahu']
           });
           return {
@@ -62,7 +62,7 @@ export function TestingPage() {
       {
         name: 'Egg allergen detection (telur)',
         fn: async () => {
-          const { data } = await api.post('/ai/check-allergen', {
+          const { data } = await api.post('/api/ai/check-allergen', {
             ingredients: ['telur']
           });
           return {
@@ -77,7 +77,7 @@ export function TestingPage() {
       {
         name: 'Multiple allergen merge (tahu, telur, susu)',
         fn: async () => {
-          const { data } = await api.post('/ai/check-allergen', {
+          const { data } = await api.post('/api/ai/check-allergen', {
             ingredients: ['tahu', 'telur', 'susu']
           });
           const allergens = data.mergedAllergens || [];
@@ -94,7 +94,7 @@ export function TestingPage() {
       {
         name: 'Menu CBR - chicken (ayam)',
         fn: async () => {
-          const { data } = await api.post('/ai/generate-menu-cbr', {
+          const { data } = await api.post('/api/ai/generate-menu-cbr', {
             baseIngredient: 'ayam'
           });
           return {
@@ -107,7 +107,7 @@ export function TestingPage() {
         name: 'Menu CBR - invalid ingredient rejection',
         fn: async () => {
           try {
-            const { data } = await api.post('/ai/generate-menu-cbr', {
+            const { data } = await api.post('/api/ai/generate-menu-cbr', {
               baseIngredient: 'invalid_food_item'
             });
             return { pass: !data.success, details: data };
@@ -119,7 +119,7 @@ export function TestingPage() {
       {
         name: 'Case insensitive ingredient (TAHU)',
         fn: async () => {
-          const { data } = await api.post('/ai/validate-ingredient', {
+          const { data } = await api.post('/api/ai/validate-ingredient', {
             ingredientName: 'TAHU'
           });
           return { pass: data.isValid === true, details: data };
@@ -128,7 +128,7 @@ export function TestingPage() {
       {
         name: 'Whitespace handling (  telur  )',
         fn: async () => {
-          const { data } = await api.post('/ai/validate-ingredient', {
+          const { data } = await api.post('/api/ai/validate-ingredient', {
             ingredientName: '  telur  '
           });
           return { pass: data.isValid === true, details: data };
@@ -137,7 +137,7 @@ export function TestingPage() {
       {
         name: 'Synonym matching (dada ayam)',
         fn: async () => {
-          const { data } = await api.post('/ai/validate-ingredient', {
+          const { data } = await api.post('/api/ai/validate-ingredient', {
             ingredientName: 'dada ayam'
           });
           return { pass: data.isValid === true, details: data };
@@ -182,8 +182,8 @@ export function TestingPage() {
 
     try {
       const [validationRes, allergenRes] = await Promise.all([
-        api.post('/ai/validate-ingredient', { ingredientName: customIngredient }),
-        api.post('/ai/check-allergen', { ingredients: [customIngredient] })
+        api.post('/api/ai/validate-ingredient', { ingredientName: customIngredient }),
+        api.post('/api/ai/check-allergen', { ingredients: [customIngredient] })
       ]);
 
       setCustomResult({

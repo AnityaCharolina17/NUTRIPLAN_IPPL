@@ -96,7 +96,7 @@ export async function runValidationTest(
   testCase: ValidationTestCase
 ): Promise<ValidationTestResult> {
   try {
-    const { data } = await api.post('/ai/validate-ingredients', {
+    const { data } = await api.post('/api/ai/validate-ingredients', {
       ingredients: testCase.ingredients
     });
 

@@ -9,10 +9,10 @@ const API_ROOT = import.meta.env.VITE_API_URL;
 
 /**
  * BASE URL
- * - Selalu pakai prefix /api (sesuai app.ts backend)
- * - Fallback ke /api untuk local/proxy
+ * - Jangan tambah /api di sini, karena semua request sudah pakai /api/...
+ * - Fallback ke window.location.origin untuk local
  */
-const baseURL = API_ROOT ? `${API_ROOT}/api` : "/api";
+const baseURL = API_ROOT || window.location.origin;
 
 export const api = axios.create({
   baseURL,

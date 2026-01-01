@@ -27,7 +27,7 @@ export function AllergenDetectorPage() {
         return;
       }
       
-      const { data } = await api.post('/ai/check-allergen', { ingredients: ingredientList });
+      const { data } = await api.post('/api/ai/check-allergen', { ingredients: ingredientList });
 
       if (!data.success) {
         alert(data.message || 'Gagal mendeteksi alergen');

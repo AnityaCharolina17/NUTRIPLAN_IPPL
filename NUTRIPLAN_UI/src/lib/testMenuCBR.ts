@@ -74,7 +74,7 @@ export async function runMenuCBRTest(
   testCase: MenuCBRTestCase
 ): Promise<MenuCBRTestResult> {
   try {
-    const { data } = await api.post('/ai/generate-menu-cbr', {
+    const { data } = await api.post('/api/ai/generate-menu-cbr', {
       baseIngredient: testCase.ingredient
     });
 

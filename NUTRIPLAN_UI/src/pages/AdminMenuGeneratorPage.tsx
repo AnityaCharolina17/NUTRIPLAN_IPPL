@@ -39,18 +39,23 @@ export function AdminMenuGeneratorPage() {
 
   // Fetch weekly recap
   useEffect(() => {
+    const token = localStorage.getItem('nutriplan_token');
+    if (!isAdmin || !token) return; // Skip when not authenticated as admin
+
     const fetchRecap = async () => {
       try {
-        const res = await api.get('/kitchen/recap');
+        const res = await api.get('/api/kitchen/recap');
         if (res.data?.success) {
           setWeeklyRecap(res.data);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('Could not fetch recap');
+        const msg = error?.response?.data?.message || 'Gagal mengambil rekapan dapur';
+        toast.error(msg);
       }
     };
     fetchRecap();
-  }, []);
+  }, [isAdmin]);
 
   // Redirect if not admin
   if (!isAdmin) {
@@ -69,10 +74,13 @@ export function AdminMenuGeneratorPage() {
 
     try {
       const generated = await generateMenuSuggestions(mainIngredient);
+      console.log('Generated menus:', generated);
       setSuggestions(generated);
       toast.success(`Berhasil generate ${generated.length} opsi menu!`);
-    } catch (error) {
-      toast.error('Gagal generate menu. Silakan coba lagi.');
+    } catch (error: any) {
+      console.error('Generate menu error:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Gagal generate menu. Silakan coba lagi.';
+      toast.error(errorMsg);
     } finally {
       setIsGenerating(false);
     }

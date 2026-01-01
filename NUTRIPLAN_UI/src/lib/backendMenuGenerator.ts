@@ -6,7 +6,7 @@ export async function generateMenuSuggestions(ingredient: string): Promise<MenuS
 Balas dalam JSON array dengan elemen memiliki struktur:
 { "name": string, "description": string, "ingredients": string[], "allergens": string[], "nutritionFacts": {"calories": number, "protein": number, "carbs": number, "fat": number, "fiber": number}, "portions": [{"item": string, "amount": string, "weight": string}] }`;
   try {
-    const res = await api.post('/ai/analyze-food', { foodDescription: prompt });
+    const res = await api.post('/api/ai/analyze-food', { foodDescription: prompt });
     const analysis = res.data?.analysis;
     // If backend returns an array already
     if (Array.isArray(analysis)) {
