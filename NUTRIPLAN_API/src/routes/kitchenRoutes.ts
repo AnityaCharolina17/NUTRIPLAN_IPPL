@@ -7,6 +7,7 @@ import {
 
 const router = Router();
 
+router.get("/recap", authMiddleware, getWeeklyRecap);
 router.get("/recap/:weekStart", authMiddleware, getWeeklyRecap);
 router.get("/daily-recap/:weekStart/:day", authMiddleware, getDailyRecap);
 

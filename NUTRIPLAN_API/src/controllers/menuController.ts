@@ -53,6 +53,79 @@ export const getCurrentWeekMenu = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Get current menu error:", error);
+    return res.status(200).json({
+      success: false,
+      message: "Belum dapat mengambil menu saat ini. Silakan coba lagi nanti.",
+      menu: null,
+    });
+  }
+};
+
+/**
+ * GET /api/menus/week/:weekStart
+ * Ambil menu berdasarkan tanggal minggu (weekStart)
+ */
+export const getMenuByWeekStart = async (req: Request, res: Response) => {
+  try {
+    const { weekStart } = req.params;
+    if (!weekStart) {
+      return res.status(400).json({
+        success: false,
+        message: "weekStart diperlukan",
+      });
+    }
+
+    const parsed = new Date(weekStart);
+    if (isNaN(parsed.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "weekStart tidak valid",
+      });
+    }
+
+    parsed.setUTCHours(0, 0, 0, 0);
+
+    const menu = await prisma.weeklyMenu.findFirst({
+      where: {
+        weekStart: parsed,
+        isActive: true,
+      },
+      include: {
+        items: {
+          select: {
+            id: true,
+            day: true,
+            mainDish: true,
+            sideDish: true,
+            vegetable: true,
+            fruit: true,
+            drink: true,
+            imageUrl: true,
+            calories: true,
+            protein: true,
+            carbs: true,
+            fat: true,
+            portionCount: true,
+            ingredients: true,
+            allergens: true,
+          },
+        },
+      },
+    });
+
+    if (!menu) {
+      return res.status(200).json({
+        success: false,
+        message: "Menu tidak ditemukan untuk minggu ini",
+      });
+    }
+
+    return res.json({
+      success: true,
+      menu,
+    });
+  } catch (error) {
+    console.error("Get menu by weekStart error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -174,23 +247,6 @@ export const saveWeeklyMenu = async (req: AuthRequest, res: Response) => {
               create: (item.allergens || []).map((allergen: string) => ({
                 allergen,
               })),
-                     select: {
-                       id: true,
-                       day: true,
-                       mainDish: true,
-                       sideDish: true,
-                       vegetable: true,
-                       fruit: true,
-                       drink: true,
-                       imageUrl: true,
-                       calories: true,
-                       protein: true,
-                       carbs: true,
-                       fat: true,
-                       portionCount: true,
-                       ingredients: true,
-                       allergens: true,
-                     },
             },
           })),
         },
