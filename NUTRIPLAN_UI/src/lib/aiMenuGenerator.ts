@@ -1,6 +1,11 @@
 ﻿import { api } from "./api";
 import { MenuPortion, DetailedNutrition } from "./menuData";
 
+/**
+ * ============================
+ * TYPES
+ * ============================
+ */
 export interface MenuSuggestion {
   name: string;
   description: string;
@@ -11,25 +16,33 @@ export interface MenuSuggestion {
 }
 
 /**
- * Generate menu menggunakan CBR
+ * ============================
+ * GENERATE MENU (CBR)
  * Endpoint: POST /api/ai/generate-menu-cbr
+ * Body: { ingredients: string[] }
+ * ============================
  */
 export const generateMenuSuggestions = async (
   ingredient: string
 ): Promise<MenuSuggestion[]> => {
   try {
-    const { data } = await api.post("/ai/generate-menu-cbr", {
-      ingredients: [ingredient], // ✅ sesuai backend
+    const response = await api.post("/ai/generate-menu-cbr", {
+      ingredients: [ingredient], // ⬅️ WAJIB array
     });
 
+    const data = response.data;
     console.log("CBR Response:", data);
 
-    if (!data.success || !data.menus || data.menus.length === 0) {
-      throw new Error(data.message || "Tidak ada menu ditemukan");
+    if (!data?.success) {
+      throw new Error(data?.message || "Generate menu gagal");
+    }
+
+    if (!Array.isArray(data.menus) || data.menus.length === 0) {
+      throw new Error("Tidak ada menu yang dihasilkan");
     }
 
     return data.menus.map((menu: any) => ({
-      name: menu.menuName,
+      name: menu.menuName || "Menu Tanpa Nama",
       description: menu.description || "",
       ingredients: menu.ingredients || [ingredient],
       allergens: menu.allergens || [],
@@ -45,42 +58,71 @@ export const generateMenuSuggestions = async (
         vitaminA: 0,
         vitaminC: 0,
       },
-      portions: [{ item: menu.menuName, amount: "1 porsi", weight: "300g" }],
+      portions: [
+        {
+          item: menu.menuName || "Menu",
+          amount: "1 porsi",
+          weight: "300g",
+        },
+      ],
     }));
   } catch (error: any) {
-    console.error("Generate menu error:", error?.response?.data || error);
+    console.error(
+      "Generate menu error:",
+      error?.response?.data || error
+    );
     throw error;
   }
 };
 
 /**
- * Validasi ingredient
+ * ============================
+ * VALIDATE INGREDIENT
  * Endpoint: POST /api/ai/validate-ingredient
+ * ============================
  */
 export const validateIngredient = async (ingredientName: string) => {
-  const { data } = await api.post("/ai/validate-ingredient", {
-    ingredientName,
-  });
+  try {
+    const { data } = await api.post("/ai/validate-ingredient", {
+      ingredientName,
+    });
 
-  return {
-    isValid: data.isValid,
-    message: data.message,
-    allergens: data.allergens || [],
-  };
+    return {
+      isValid: Boolean(data.isValid),
+      message: data.message || "",
+      allergens: data.allergens || [],
+    };
+  } catch (error: any) {
+    console.error(
+      "Validate ingredient error:",
+      error?.response?.data || error
+    );
+    throw error;
+  }
 };
 
 /**
- * Deteksi allergen
+ * ============================
+ * DETECT ALLERGENS
  * Endpoint: POST /api/ai/check-allergen
+ * ============================
  */
 export const detectAllergens = async (ingredientNames: string[]) => {
-  const { data } = await api.post("/ai/check-allergen", {
-    ingredients: ingredientNames,
-  });
+  try {
+    const { data } = await api.post("/ai/check-allergen", {
+      ingredients: ingredientNames,
+    });
 
-  return {
-    success: data.success,
-    mergedAllergens: data.mergedAllergens || [],
-    results: data.ingredients || [],
-  };
+    return {
+      success: Boolean(data.success),
+      mergedAllergens: data.mergedAllergens || [],
+      results: data.ingredients || [],
+    };
+  } catch (error: any) {
+    console.error(
+      "Detect allergens error:",
+      error?.response?.data || error
+    );
+    throw error;
+  }
 };
