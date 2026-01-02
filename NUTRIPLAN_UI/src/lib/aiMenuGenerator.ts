@@ -26,8 +26,8 @@ export const generateMenuSuggestions = async (
   ingredient: string
 ): Promise<MenuSuggestion[]> => {
   try {
-    const response = await api.post("/ai/generate-menu-cbr", {
-      ingredient: ingredient, // ⬅️ WAJIB array
+    const response = await api.post("/api/ai/generate-menu-cbr", {
+      baseIngredient: ingredient,
     });
 
     const data = response.data;
@@ -83,7 +83,7 @@ export const generateMenuSuggestions = async (
  */
 export const validateIngredient = async (ingredientName: string) => {
   try {
-    const { data } = await api.post("/ai/validate-ingredient", {
+    const { data } = await api.post("/api/ai/validate-ingredient", {
       ingredientName,
     });
 
@@ -109,7 +109,7 @@ export const validateIngredient = async (ingredientName: string) => {
  */
 export const detectAllergens = async (ingredientNames: string[]) => {
   try {
-    const { data } = await api.post("/ai/check-allergen", {
+    const { data } = await api.post("/api/ai/check-allergen", {
       ingredients: ingredientNames,
     });
 
